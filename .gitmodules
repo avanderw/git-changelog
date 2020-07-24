@@ -1,0 +1,3 @@
+[submodule "src/test/repository"]
+	path = src/test/repository
+	url = https://github.com/avanderw/git-changelog-test
