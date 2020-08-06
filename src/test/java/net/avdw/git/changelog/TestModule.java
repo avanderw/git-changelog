@@ -12,9 +12,11 @@ import net.avdw.git.changelog.temp.TempModule;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
-class MainModule extends AbstractPropertyModule {
+class TestModule extends AbstractPropertyModule {
     @Override
     protected void configure() {
         Properties properties = configureProperties();
@@ -43,17 +45,5 @@ class MainModule extends AbstractPropertyModule {
             jarExtractor.extract(tmpDir, ".*\\.sh");
         }
         return script;
-    }
-
-    @Provides
-    @Singleton
-    ResourceBundle resourceBundle() {
-        return ResourceBundle.getBundle("changelog", Locale.ENGLISH);
-    }
-
-    @Provides
-    @Singleton
-    Templator templator(final ResourceBundle resourceBundle) {
-        return new Templator(resourceBundle);
     }
 }

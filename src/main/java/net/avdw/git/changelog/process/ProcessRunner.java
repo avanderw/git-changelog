@@ -4,9 +4,12 @@ import com.google.inject.Inject;
 import lombok.SneakyThrows;
 import org.tinylog.Logger;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class ProcessRunner {
     private static final int BASH_PROCESS_ARGS = 3;
@@ -19,8 +22,8 @@ public class ProcessRunner {
     }
 
     @SneakyThrows
-    public void execute(final Path script, final Path baseDir, final String... scriptArgs) {
-        Path baseDirCopy = (baseDir == null) ? Paths.get("") : baseDir;
+    public void execute(final Path script, final Path baseDir, final PrintStream out, final String... scriptArgs) {
+        Path baseDirCopy = (baseDir == null) ? Paths.get("").toAbsolutePath() : baseDir;
         Logger.debug("Executing script: {} {}", script.getFileName(), Arrays.toString(scriptArgs));
         Logger.debug("Base directory: {}", baseDirCopy);
         if (script.toString().endsWith(".sh")) {
@@ -31,11 +34,22 @@ public class ProcessRunner {
             System.arraycopy(scriptArgs, 0, processArgs, BASH_PROCESS_ARGS, scriptArgs.length);
             Process process = new ProcessBuilder(processArgs)
                     .directory(baseDirCopy.toFile())
-                    .inheritIO()
                     .start();
+
+            routeStream(process.getInputStream(), out);
+            routeStream(process.getErrorStream(), System.err);
             process.waitFor();
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported script type: %s", script));
         }
+    }
+
+    private static void routeStream(final InputStream src, final PrintStream dest) {
+        new Thread(() -> {
+            Scanner scanner = new Scanner(src);
+            while(scanner.hasNextLine()) {
+                dest.println(scanner.nextLine());
+            }
+        }).start();
     }
 }

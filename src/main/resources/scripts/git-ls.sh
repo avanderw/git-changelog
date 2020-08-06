@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # script: http://mywiki.wooledge.org/BashFAQ/035
-
 die() {
   printf '%s\n' "$1" >&2
   exit 1
@@ -12,7 +11,6 @@ die() {
 
 to=
 from=
-out=
 
 while :; do
   case $1 in
@@ -25,12 +23,6 @@ while :; do
   -f=?*)
     from="${1#*=}"
     ;;
-  -o=?*) # Delete everything up to "=" and assign the remainder.
-    out="${1#*=}"
-    ;;
-  -o=) # Handle the case of an empty -o=
-    die 'ERROR: "-o" requires a non-empty option argument.'
-    ;;
   *) # Default case: No more options, so break out of the loop.
     break ;;
   esac
@@ -38,4 +30,3 @@ while :; do
 done
 
 git log --pretty='{subject: "%s"}' "${to}".."${from}"
-git log --pretty='{subject: "%s"}' "${to}".."${from}" >>"${out}"
