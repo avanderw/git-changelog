@@ -33,10 +33,62 @@ class MainModule extends AbstractPropertyModule {
     }
 
     @Provides
+    @GitCheckout
+    @Singleton
+    @SneakyThrows
+    Path gitCheckoutScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                .resolve("scripts/git-checkout.sh");
+        if (!Files.exists(script)) {
+            jarExtractor.extract(tmpDir, ".*\\.sh");
+        }
+        return script;
+    }
+
+    @Provides
+    @GitCurrentBranch
+    @Singleton
+    @SneakyThrows
+    Path gitCurrentBranchScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                .resolve("scripts/git-current-branch.sh");
+        if (!Files.exists(script)) {
+            jarExtractor.extract(tmpDir, ".*\\.sh");
+        }
+        return script;
+    }
+
+    @Provides
+    @GitFirstCommit
+    @Singleton
+    @SneakyThrows
+    Path gitFirstCommitScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                .resolve("scripts/git-first-commit.sh");
+        if (!Files.exists(script)) {
+            jarExtractor.extract(tmpDir, ".*\\.sh");
+        }
+        return script;
+    }
+
+    @Provides
+    @GitLatestTag
+    @Singleton
+    @SneakyThrows
+    Path gitLatestTagScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                .resolve("scripts/git-latest-tag.sh");
+        if (!Files.exists(script)) {
+            jarExtractor.extract(tmpDir, ".*\\.sh");
+        }
+        return script;
+    }
+
+    @Provides
     @GitLs
     @Singleton
     @SneakyThrows
-    Path gitLsFile(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+    Path gitLsScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
         Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                 .resolve("scripts/git-ls.sh");
         if (!Files.exists(script)) {

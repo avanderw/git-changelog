@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 public class MainCliTest {
 
-    private static final Path checkoutScript = Paths.get("src/test/resources/checkout.sh").toAbsolutePath();
+    private static final Path checkoutScript = Paths.get("src/main/resources/scripts/git-checkout.sh").toAbsolutePath();
     private static final ByteArrayOutputStream scriptOutput = new ByteArrayOutputStream();
     private static final PrintStream printStream = new PrintStream(scriptOutput);
     private static final Path testRepository = Paths.get("src/test/repository").toAbsolutePath();
@@ -57,16 +57,17 @@ public class MainCliTest {
     }
 
     @Test
-    public void testBasic() {
+    public void testBasicUsage() {
         assertSuccess(commandLine.execute("v1.0.0", "v1.1.0", "-r=" + testRepository));
         assertFalse("SHOULD NOT output usage help", outWriter.toString().contains("Usage"));
+        assertTrue(outWriter.toString().contains("v2.0.1"));
     }
 
     @Test
-    public void testEmpty() {
-        processRunner.execute(checkoutScript, testRepository, printStream, "feature");
+    public void testEmptyArguments() {
         assertSuccess(commandLine.execute());
         assertFalse("SHOULD NOT output usage help", outWriter.toString().contains("Usage"));
+        assertTrue(outWriter.toString().contains("Released on"));
     }
 
     @Test
@@ -75,14 +76,29 @@ public class MainCliTest {
     }
 
     @Test
-    public void testEmptyRepository() {
+    public void testEmptyBranchCompare() {
         processRunner.execute(checkoutScript, testRepository, printStream, "hotfix");
         assertSuccess(commandLine.execute("-r=" + testRepository));
+        assertTrue(outWriter.toString().contains("v2.0.1"));
     }
 
     @Test
     public void testVersion() {
         assertSuccess(commandLine.execute("--version"));
         assertNotEquals(2, outWriter.toString().length());
+    }
+
+    @Test
+    public void testEmptyTagCompare() {
+        processRunner.execute(checkoutScript, testRepository, printStream, "master");
+        assertSuccess(commandLine.execute("-r=" + testRepository));
+        assertTrue(outWriter.toString().contains("v2.0.1"));
+    }
+
+    @Test
+    public void testMajorRecommend() {
+        assertSuccess(commandLine.execute("v1.0.0", "v2.0.0", "-r=" + testRepository));
+        assertTrue(outWriter.toString().contains("v3.0.0"));
+        assertTrue(outWriter.toString().contains("Update recommended"));
     }
 }

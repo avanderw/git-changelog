@@ -37,7 +37,7 @@ public class ProcessRunner {
                     .start();
 
             routeStream(process.getInputStream(), out);
-            routeStream(process.getErrorStream(), System.err);
+            routeStream(process.getErrorStream(), null);
             process.waitFor();
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported script type: %s", script));
@@ -48,7 +48,11 @@ public class ProcessRunner {
         new Thread(() -> {
             Scanner scanner = new Scanner(src);
             while(scanner.hasNextLine()) {
-                dest.println(scanner.nextLine());
+                if (dest == null) {
+                    Logger.debug("Script: {}", scanner.nextLine());
+                } else {
+                    dest.println(scanner.nextLine());
+                }
             }
         }).start();
     }
