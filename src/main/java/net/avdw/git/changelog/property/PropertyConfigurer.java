@@ -6,12 +6,11 @@ import org.tinylog.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class PropertyConfigurer {
     private final Properties defaultProperties;
-    private final Properties localProperties;
     private final Properties globalProperties;
+    private final Properties localProperties;
 
     @Inject
     public PropertyConfigurer(@Default final Properties defaultProperties,
@@ -29,7 +28,7 @@ public class PropertyConfigurer {
         prioritizedProperties.putAll(globalProperties);
 
         List<String> propertyList = new ArrayList<>();
-        prioritizedProperties.forEach((key, value)->propertyList.add(String.format("%s=%s", key, value)));
+        prioritizedProperties.forEach((key, value) -> propertyList.add(String.format("%s=%s", key, value)));
         Logger.debug("Properties:\n{}", String.join("\n", propertyList));
         return prioritizedProperties;
     }

@@ -9,7 +9,6 @@ import net.avdw.git.changelog.property.AbstractPropertyModule;
 import net.avdw.git.changelog.temp.Temp;
 import net.avdw.git.changelog.temp.TempModule;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -36,71 +35,59 @@ class MainModule extends AbstractPropertyModule {
     @GitCheckout
     @Singleton
     @SneakyThrows
-    Path gitCheckoutScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
-        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                .resolve("scripts/git-checkout.sh");
-        if (!Files.exists(script)) {
-            jarExtractor.extract(tmpDir, ".*\\.sh");
-        }
-        return script;
+    Path gitCheckoutScript(@Script Path scriptPath) {
+        return scriptPath.resolve("scripts/git-checkout.sh");
     }
 
     @Provides
     @GitCurrentBranch
     @Singleton
     @SneakyThrows
-    Path gitCurrentBranchScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
-        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                .resolve("scripts/git-current-branch.sh");
-        if (!Files.exists(script)) {
-            jarExtractor.extract(tmpDir, ".*\\.sh");
-        }
-        return script;
+    Path gitCurrentBranchScript(@Script Path scriptPath) {
+        return scriptPath.resolve("scripts/git-current-branch.sh");
     }
 
     @Provides
     @GitFirstCommit
     @Singleton
     @SneakyThrows
-    Path gitFirstCommitScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
-        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                .resolve("scripts/git-first-commit.sh");
-        if (!Files.exists(script)) {
-            jarExtractor.extract(tmpDir, ".*\\.sh");
-        }
-        return script;
+    Path gitFirstCommitScript(@Script Path scriptPath) {
+        return scriptPath.resolve("scripts/git-first-commit.sh");
     }
 
     @Provides
     @GitLatestTag
     @Singleton
     @SneakyThrows
-    Path gitLatestTagScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
-        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                .resolve("scripts/git-latest-tag.sh");
-        if (!Files.exists(script)) {
-            jarExtractor.extract(tmpDir, ".*\\.sh");
-        }
-        return script;
+    Path gitLatestTagScript(@Script Path scriptPath) {
+        return scriptPath.resolve("scripts/git-latest-tag.sh");
     }
 
     @Provides
     @GitLs
     @Singleton
     @SneakyThrows
-    Path gitLsScript(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
-        Path script = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                .resolve("scripts/git-ls.sh");
-        if (!Files.exists(script)) {
-            jarExtractor.extract(tmpDir, ".*\\.sh");
-        }
-        return script;
+    Path gitLsScript(@Script Path scriptPath) {
+        return scriptPath.resolve("scripts/git-ls.sh");
     }
 
     @Provides
     @Singleton
     ResourceBundle resourceBundle() {
         return ResourceBundle.getBundle("changelog", Locale.ENGLISH);
+    }
+
+    @Provides
+    @Singleton
+    @Script
+    @SneakyThrows
+    Path scriptPath(@Temp final Path tmpDir, final JarExtractor jarExtractor) {
+        if (Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).toString().endsWith(".jar")) {
+            jarExtractor.extract(tmpDir, ".*\\.sh");
+            return tmpDir;
+        } else {
+            return Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+        }
     }
 
     @Provides
