@@ -169,7 +169,12 @@ public class MainCli implements Runnable {
     }
 
     private boolean isChanged(final GitChange gitChange) {
-        return gitChange.subject.toLowerCase().startsWith("change");
+        boolean startsWithUpdate = gitChange.subject.toLowerCase().startsWith("update");
+        boolean startsWithChange = gitChange.subject.toLowerCase().startsWith("change");
+        boolean startsWithEnhance = gitChange.subject.toLowerCase().startsWith("enhance");
+        boolean startsWithRefactor = gitChange.subject.toLowerCase().startsWith("refactor");
+        boolean isChanged = startsWithChange || startsWithUpdate || startsWithEnhance || startsWithRefactor;
+        return isChanged;
     }
 
     private boolean isDeprecated(final GitChange gitChange) {
@@ -181,7 +186,11 @@ public class MainCli implements Runnable {
     }
 
     private boolean isIgnored(final GitChange gitChange) {
-        return gitChange.subject.toLowerCase().startsWith("maintain");
+        boolean startsWithSetup = gitChange.subject.toLowerCase().startsWith("setup");
+        boolean startsWithMaintain = gitChange.subject.toLowerCase().startsWith("maintain");
+        boolean startsWithMerge = gitChange.subject.toLowerCase().startsWith("merge");
+        boolean isIgnored = startsWithSetup || startsWithMaintain || startsWithMerge;
+        return isIgnored;
     }
 
     private boolean isMajor(final Map<ChangeType, List<GitChange>> categorisedGitChangeMap) {
