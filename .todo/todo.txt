@@ -1,2 +1,3 @@
 2020-08-14 Add rule for '*Update.*' to be a feature
 2020-08-14 Update rules to be regex based
+r 2021-05-14 2021-05-14 @Add feature to generate a changelog between two versions

@@ -60,7 +60,6 @@ public class MainCliTest {
     public void testBasicUsage() {
         assertSuccess(commandLine.execute("v1.0.0", "v1.1.0", "-r=" + testRepository));
         assertFalse("SHOULD NOT output usage help", outWriter.toString().contains("Usage"));
-        assertTrue(outWriter.toString().contains("v2.0.1"));
     }
 
     @Test
@@ -79,7 +78,6 @@ public class MainCliTest {
     public void testEmptyBranchCompare() {
         processRunner.execute(checkoutScript, testRepository, printStream, "hotfix");
         assertSuccess(commandLine.execute("-r=" + testRepository));
-        assertTrue(outWriter.toString().contains("v2.0.1"));
     }
 
     @Test
@@ -92,13 +90,11 @@ public class MainCliTest {
     public void testEmptyTagCompare() {
         processRunner.execute(checkoutScript, testRepository, printStream, "master");
         assertSuccess(commandLine.execute("-r=" + testRepository));
-        assertTrue(outWriter.toString().contains("v2.0.1"));
     }
 
     @Test
-    public void testMajorRecommend() {
-        assertSuccess(commandLine.execute("v1.0.0", "v2.0.0", "-r=" + testRepository));
-        assertTrue(outWriter.toString().contains("v3.0.0"));
-        assertTrue(outWriter.toString().contains("Update recommended"));
+    public void testVersionScheme() {
+        assertSuccess(commandLine.execute("v2021-08-02.11.03", "-r=" + testRepository));
+        assertSuccess(commandLine.execute("v2021-08-02.11.03", "v2021-08-02.11.30", "-r=" + testRepository));
     }
 }

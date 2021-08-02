@@ -69,34 +69,6 @@ public class MainCli implements Runnable {
         }
     }
 
-    private String calculateVersion(final Map<ChangeType, List<GitChange>> categorisedGitChangeMap) {
-        Optional<String> latestVersion = findLatestVersion();
-
-        int majorNum = 0;
-        int minorNum = 0;
-        int patchNum = 0;
-
-        if (latestVersion.isPresent()) {
-            String version = latestVersion.get().trim();
-            majorNum = Integer.parseInt(version.substring(0, version.indexOf(".")));
-            minorNum = Integer.parseInt(version.substring(version.indexOf(".") + 1, version.lastIndexOf(".")));
-            patchNum = Integer.parseInt(version.substring(version.lastIndexOf(".") + 1));
-        }
-
-        if (isMajor(categorisedGitChangeMap)) {
-            majorNum += 1;
-            minorNum = 0;
-            patchNum = 0;
-        } else if (isMinor(categorisedGitChangeMap)) {
-            minorNum += 1;
-            patchNum = 0;
-        } else if (isPatch(categorisedGitChangeMap)) {
-            patchNum += 1;
-        }
-
-        return String.format("%s.%s.%s", majorNum, minorNum, patchNum);
-    }
-
     private Map<ChangeType, List<GitChange>> categoriseGitChangeList(final List<GitChange> gitChangeList) {
         Map<ChangeType, List<GitChange>> categorisedGitChangeMap = new HashMap<>();
         gitChangeList.forEach(gitChange -> {
@@ -115,21 +87,6 @@ public class MainCli implements Runnable {
             Logger.debug("Current branch: {}", currentBranch);
         }
         return currentBranch;
-    }
-
-    private Optional<String> findLatestVersion() {
-        String version = latestTag();
-
-        if (version.isEmpty()) {
-            Logger.debug("No latest version found");
-            return Optional.empty();
-        } else {
-            if (version.startsWith("v")) {
-                version = version.substring(1);
-            }
-            Logger.debug("Latest version: {}", version);
-            return Optional.of(version);
-        }
     }
 
     private String firstCommit() {
@@ -290,7 +247,7 @@ public class MainCli implements Runnable {
             if (!categorisedGitChangeMap.isEmpty()) {
                 spec.commandLine().getOut().println(templator.populate(ResourceBundleKey.RELEASE_TITLE,
                         gson.fromJson(String.format("{version:'%s',type:'%s',recommend:%s,date:'%s'}",
-                                calculateVersion(categorisedGitChangeMap),
+                                "${version}",
                                 calculateType(categorisedGitChangeMap),
                                 calculateRecommend(categorisedGitChangeMap),
                                 new SimpleDateFormat("yyyy-MM-dd").format(new Date())),
